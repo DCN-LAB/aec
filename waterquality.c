@@ -1,64 +1,62 @@
-// Pin Definitions
 #define TRIG_PIN 27
 #define ECHO_PIN 26
-#define TURBIDITY_PIN 34
-#define LED_PIN 25
-#define BUZZER_PIN 33
+#define ADC_PIN 35
+#define BUZZER_PIN 23
 
-// Thresholds
-#define TURBIDITY_THRESHOLD 300 // Adjust based on calibration
-#define DISTANCE_THRESHOLD 10   // in cm
+// Constants
+const int NUM_READINGS = 5;
+const float EMPTY_LEVEL = 14.0;
+const float FULL_LEVEL = 3.0;
+const int CLEAR_THRESHOLD = 50;
+const int BLOCKED_THRESHOLD = 4095;
 
 void setup() {
-    Serial.begin(115200);
-
-    // Ultrasonic Sensor
-    pinMode(TRIG_PIN, OUTPUT);
-    pinMode(ECHO_PIN, INPUT);
-
-    // Turbidity Sensor
-    pinMode(TURBIDITY_PIN, INPUT);
-
-    // LED and Buzzer
-    pinMode(LED_PIN, OUTPUT);
-    pinMode(BUZZER_PIN, OUTPUT);
-    digitalWrite(LED_PIN, LOW);
-    digitalWrite(BUZZER_PIN, LOW);
+  Serial.begin(115200);
+  pinMode(TRIG_PIN, OUTPUT);
+  pinMode(ECHO_PIN, INPUT);
+  pinMode(ADC_PIN, INPUT);
+  pinMode(BUZZER_PIN, OUTPUT);
 }
 
 void loop() {
-    // Measure distance using Ultrasonic Sensor
-    long duration;
-    float distance;
+  // Read water level and turbidity
+  float distance = getDistance();
+  int turbidityValue = analogRead(ADC_PIN);
+  int turbidityPercentage = map(turbidityValue, CLEAR_THRESHOLD, BLOCKED_THRESHOLD, 100, 0); // Normalize turbidity value
 
+  // Print status to Serial Monitor
+  Serial.print("Water Level: ");
+  Serial.print(distance);
+  Serial.println(" cm");
+
+  Serial.print("Turbidity: ");
+  Serial.print(turbidityPercentage);
+  Serial.println(" %");
+
+  // Handle warnings with buzzer
+  if (distance > EMPTY_LEVEL || turbidityPercentage > 50) { // Buzzer for high turbidity or empty water level
+    tone(BUZZER_PIN, 1000, 250);  
+    delay(500);
+  } else {
+    noTone(BUZZER_PIN);
+  }
+
+  delay(500);
+}
+
+float getDistance() {
+  long totalDuration = 0;
+
+  for (int i = 0; i < NUM_READINGS; i++) {
     digitalWrite(TRIG_PIN, LOW);
     delayMicroseconds(2);
     digitalWrite(TRIG_PIN, HIGH);
     delayMicroseconds(10);
     digitalWrite(TRIG_PIN, LOW);
 
-    duration = pulseIn(ECHO_PIN, HIGH);
-    distance = (duration * 0.034) / 2;
+    totalDuration += pulseIn(ECHO_PIN, HIGH);
+    delay(50);
+  }
 
-    // Read Turbidity Sensor
-    int turbidity = analogRead(TURBIDITY_PIN);
-
-    // Print readings
-    Serial.print("Distance: ");
-    Serial.print(distance);
-    Serial.println(" cm");
-    Serial.print("Turbidity: ");
-    Serial.println(turbidity);
-
-    // Check for alerts
-    if (turbidity > TURBIDITY_THRESHOLD || distance < DISTANCE_THRESHOLD) {
-        digitalWrite(LED_PIN, HIGH); // Turn on LED
-        digitalWrite(BUZZER_PIN, HIGH); // Turn on Buzzer
-        Serial.println("ALERT! Quality Issue Detected.");
-    } else {
-        digitalWrite(LED_PIN, LOW); // Turn off LED
-        digitalWrite(BUZZER_PIN, LOW); // Turn off Buzzer
-    }
-
-    delay(1000); // Delay for stability
+  return (totalDuration / NUM_READINGS) * 0.034 / 2; // Average distance in cm
 }
