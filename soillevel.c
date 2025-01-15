@@ -1,19 +1,20 @@
 #include <DHT.h>
 
 // DHT11 Settings
-#define DHT_PIN 14
+#define DHT_PIN 2
 #define DHT_TYPE DHT11
 DHT dht(DHT_PIN, DHT_TYPE);
 
 // Moisture Sensor Settings
-#define MOISTURE_PIN 34
-#define MOTOR_LED_PIN 25
+#define MOISTURE_PIN A0
+#define MOTOR_LED_PIN 9
 
 // Reference moisture level
 #define MOISTURE_THRESHOLD 500
 
 void setup() {
-    Serial.begin(115200);
+    // Initialize Serial Communication
+    Serial.begin(9600);
 
     // Initialize DHT sensor
     dht.begin();
@@ -21,7 +22,7 @@ void setup() {
     // Configure Moisture Sensor and Motor LED
     pinMode(MOISTURE_PIN, INPUT);
     pinMode(MOTOR_LED_PIN, OUTPUT);
-    digitalWrite(MOTOR_LED_PIN, LOW);
+    digitalWrite(MOTOR_LED_PIN, LOW); // Ensure motor is OFF initially
 }
 
 void loop() {
