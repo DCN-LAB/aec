@@ -2,20 +2,21 @@
 
 // Servo Motor Settings
 Servo servo;
-#define SERVO_PIN 25
+#define SERVO_PIN 9
 
 // Ultrasonic Sensor Settings
-#define TRIG_PIN 27
-#define ECHO_PIN 26
+#define TRIG_PIN 7
+#define ECHO_PIN 6
 
 // IR Sensor Settings
-#define IR_SENSOR_PIN 33
+#define IR_SENSOR_PIN 2
 
 // Threshold for Full Bin
 #define BIN_FULL_THRESHOLD 10 // in cm
 
 void setup() {
-    Serial.begin(115200);
+    // Initialize Serial Communication
+    Serial.begin(9600);
 
     // Initialize Servo Motor
     servo.attach(SERVO_PIN);
@@ -25,6 +26,8 @@ void setup() {
     pinMode(TRIG_PIN, OUTPUT);
     pinMode(ECHO_PIN, INPUT);
     pinMode(IR_SENSOR_PIN, INPUT);
+
+    Serial.println("Smart Bin System Initialized");
 }
 
 void loop() {
@@ -55,12 +58,12 @@ void loop() {
     if (waste_detected == HIGH && distance > BIN_FULL_THRESHOLD) {
         Serial.println("Opening Lid...");
         servo.write(90); // Open lid
-        delay(3000); // Keep lid open for 3 seconds
-        servo.write(0); // Close lid
+        delay(3000);     // Keep lid open for 3 seconds
+        servo.write(0);  // Close lid
         Serial.println("Closing Lid...");
     } else if (distance <= BIN_FULL_THRESHOLD) {
         Serial.println("Bin is Full!");
     }
 
-    delay(500);
+    delay(500); // Delay for stability
 }
