@@ -1,10 +1,11 @@
 // Define LED pins
-#define RED_LED 25
-#define YELLOW_LED 33
-#define GREEN_LED 32
+#define RED_LED 8
+#define YELLOW_LED 7
+#define GREEN_LED 6
 
 void setup() {
-    Serial.begin(115200);
+    // Initialize Serial Communication
+    Serial.begin(9600);
 
     // Configure LED pins
     pinMode(RED_LED, OUTPUT);
