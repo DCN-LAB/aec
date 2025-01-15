@@ -1,17 +1,18 @@
 #include <Servo.h>
 
 // Define IR sensor pins
-#define IR_SENSOR1 34
-#define IR_SENSOR2 35
-#define IR_SENSOR3 32
+#define IR_SENSOR1 2
+#define IR_SENSOR2 3
+#define IR_SENSOR3 4
 
 // Define Servo Motor pin
-#define SERVO_PIN 25
+#define SERVO_PIN 9
 
 Servo servo;
 
 void setup() {
-    Serial.begin(115200);
+    // Initialize Serial Communication
+    Serial.begin(9600);
 
     // Initialize IR sensors as input
     pinMode(IR_SENSOR1, INPUT);
