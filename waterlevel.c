@@ -1,17 +1,17 @@
 #include <Arduino.h>
 
 // Define pins for Ultrasonic Sensor
-#define TRIG_PIN 27
-#define ECHO_PIN 26
+#define TRIG_PIN 7
+#define ECHO_PIN 6
 
 // Define pins for LEDs
-#define LED_LOW 25
-#define LED_MEDIUM 33
-#define LED_HIGH 32
+#define LED_LOW 8
+#define LED_MEDIUM 9
+#define LED_HIGH 10
 
 void setup() {
     // Initialize Serial Monitor
-    Serial.begin(115200);
+    Serial.begin(9600);
 
     // Configure Ultrasonic Sensor pins
     pinMode(TRIG_PIN, OUTPUT);
@@ -26,6 +26,8 @@ void setup() {
     digitalWrite(LED_LOW, LOW);
     digitalWrite(LED_MEDIUM, LOW);
     digitalWrite(LED_HIGH, LOW);
+
+    Serial.println("Water Level Detection System Initialized");
 }
 
 void loop() {
